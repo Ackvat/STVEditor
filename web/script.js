@@ -2212,6 +2212,7 @@ const App = {
       const promises = [];
       zip.forEach(relPath => { if (relPath.startsWith('assets/')) promises.push(loadAsset(relPath)); });
       await Promise.all(promises);
+      this.cache.clear();
       this.currentIndex = 0;
       this.populateCardSelect();
       this.showCard(0);
