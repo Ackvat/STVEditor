@@ -809,6 +809,7 @@ const App = {
     this.syncVarToEditor(el.dataset.var, val);
     if (el.dataset.var === '--top-bar-bg-color' || el.dataset.var === '--top-bar-opacity') this.updateTopBarBg();
     if (el.dataset.var === '--type-bar-bg-color' || el.dataset.var === '--type-bar-opacity') this.updateTypeBarBg();
+    if (el.dataset.var === '--text-icon-scale') this.refreshPreview(this.currentIndex);
   },
 
   updateTopBarBg() {
@@ -871,9 +872,9 @@ const App = {
       '--section-header-family','--section-header-size','--section-header-color','--section-header-weight',
       '--section-body-family','--section-body-size','--section-body-color','--section-body-weight',
       '--mana-size','--mana-circle-size','--mana-bg-top','--mana-bg-bottom',
-      '--resource-icon-size','--type-icon-size',
+      '--resource-icon-size','--type-icon-size','--text-icon-scale',
       '--atkdef-size','--atkdef-circle-size','--atkdef-bg-top','--atkdef-bg-bottom'].forEach(v => root.style.removeProperty(v));
-    const defs = {'--card-radius':'12','--section-pad':'10','--top-bar-h':'46','--picture-h':'400','--type-bar-h':'36','--text-bottom':'56','--name-size':'22','--name-color':'#ffffff','--top-bar-bg':'rgba(0,0,0,0.3)','--top-bar-bg-color':'#000000','--top-bar-opacity':'30','--type-bar-bg':'rgba(0,0,0,0.4)','--type-bar-bg-color':'#000000','--type-bar-opacity':'40','--type-size':'16','--type-color':'#ffffff','--section-header-size':'15','--section-header-color':'#ffffff','--section-header-weight':'700','--section-body-size':'13','--section-body-color':'#ffffff','--section-body-weight':'400','--mana-size':'18','--mana-circle-size':'34','--mana-bg-top':'#6ab0f7','--mana-bg-bottom':'#1a4a8a','--resource-icon-size':'28','--type-icon-size':'26','--atkdef-size':'26','--atkdef-circle-size':'44','--atkdef-bg-top':'#e8c878','--atkdef-bg-bottom':'#8a6a2a'};
+    const defs = {'--card-radius':'12','--section-pad':'10','--top-bar-h':'46','--picture-h':'400','--type-bar-h':'36','--text-bottom':'56','--name-size':'22','--name-color':'#ffffff','--top-bar-bg':'rgba(0,0,0,0.3)','--top-bar-bg-color':'#000000','--top-bar-opacity':'30','--type-bar-bg':'rgba(0,0,0,0.4)','--type-bar-bg-color':'#000000','--type-bar-opacity':'40','--type-size':'16','--type-color':'#ffffff','--section-header-size':'15','--section-header-color':'#ffffff','--section-header-weight':'700','--section-body-size':'13','--section-body-color':'#ffffff','--section-body-weight':'400','--mana-size':'18','--mana-circle-size':'34','--mana-bg-top':'#6ab0f7','--mana-bg-bottom':'#1a4a8a','--resource-icon-size':'28','--type-icon-size':'26','--text-icon-scale':'1','--atkdef-size':'26','--atkdef-circle-size':'44','--atkdef-bg-top':'#e8c878','--atkdef-bg-bottom':'#8a6a2a'};
     document.querySelectorAll('input[data-var]').forEach(el => {
       if (defs[el.dataset.var] !== undefined) { if (el.type === 'range' || el.type === 'color') el.value = defs[el.dataset.var]; const d = el.parentElement.querySelector('.val'); if (d && el.type === 'range') d.textContent = el.value; }
     });
@@ -917,8 +918,8 @@ const App = {
 
   inlineIconsHtml(text, fontSize) {
     if (!text || !text.includes('<')) return this.escHtml(text || '');
-    const size = fontSize || 13;
-    /* First escape all HTML, then replace known icon patterns with img tags */
+    const scale = this.cssPx('--text-icon-scale') || 1;
+    const size = (fontSize || 13) * scale;
     let html = this.escHtml(text);
     html = html.replace(/&lt;([^&]+)&gt;/g, (m, name) => {
       const url = this.resolveInlineIconUrl(name.trim());
@@ -964,6 +965,8 @@ const App = {
 
   _tokenizeWithIcons(text, size) {
     if (!text) return [];
+    const scale = this.cssPx('--text-icon-scale') || 1;
+    const iconSize = size * scale;
     if (!text.includes('<')) {
       return text.split('\n').map(line => ({ kind: 'text', text: line }));
     }
@@ -976,7 +979,7 @@ const App = {
         if (s.type === 'text') {
           tokens.push({ kind: 'text', text: s.text });
         } else {
-          tokens.push({ kind: 'icon', name: s.name, width: size });
+          tokens.push({ kind: 'icon', name: s.name, width: iconSize });
         }
       }
     }
@@ -1036,7 +1039,7 @@ const App = {
         else if (t.kind === 'space') { curX += ctx.measureText(' ').width; }
         else if (t.kind === 'icon') {
           const img = this._getInlineIcon(t.name);
-          if (img) ctx.drawImage(img, curX, curY, size, size);
+          if (img) ctx.drawImage(img, curX, curY, t.width, t.width);
           curX += t.width;
         }
       }
@@ -1702,7 +1705,7 @@ const App = {
           bLines = this._wrapTokens(ctx, bTokens, maxTextW, bFont, bSize, bWeight);
           totalH += this._measureTokenLines(bLines, bSize) + 4;
         }
-        return { sec, hLines, bLines, hFont, hSize, hColor, hWeight, bFont, bSize, bColor, bWeight, naturalH: Math.max(totalH, 8) };
+        return { sec, hLines, bLines, hFont, hSize, hColor, hWeight, bFont, bSize, bColor, bWeight, naturalH: Math.max(totalH, 8) + 4 };
       });
 
       let curY = textY;

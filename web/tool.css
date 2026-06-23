@@ -968,8 +968,8 @@ select.ce-field {
 /* ---- Inline Icons in Card Text ---- */
 .card-text-icon {
   display: inline;
-  height: 1em;
-  width: 1em;
+  height: calc(var(--text-icon-scale) * 1em);
+  width: calc(var(--text-icon-scale) * 1em);
   vertical-align: middle;
   object-fit: contain;
 }
