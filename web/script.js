@@ -1220,8 +1220,6 @@ const App = {
      ASSET LOADING
      ================================================================ */
 
-  assetBaseURL(cat, name) { return `../assets/${cat}/${name}`; },
-
   async preloadAsset(cat, name) {
     if (!name) return null;
     const key = `${cat}:${name}`;
@@ -1232,7 +1230,6 @@ const App = {
   },
 
   async _tryLoadAsset(cat, name) {
-    /* Check in-memory store first */
     for (const ext of this.assetExts) {
       const path = `${cat}/${name}.${ext}`;
       if (this.assets[path]) {
@@ -1243,12 +1240,6 @@ const App = {
     const direct = `${cat}/${name}`;
     if (this.assets[direct]) {
       const img = await this._preloadURL(this.assets[direct]);
-      if (img) return img;
-    }
-    /* Fall back to file system */
-    for (const ext of this.assetExts) {
-      const url = this.assetBaseURL(cat, name) + '.' + ext;
-      const img = await this._preloadURL(url);
       if (img) return img;
     }
     return null;
@@ -1268,9 +1259,6 @@ const App = {
         const img = await this._preloadURL(this.assets[path]);
         if (img) return img;
       }
-      const url = `../assets/back.${ext}`;
-      const img = await this._preloadURL(url);
-      if (img) return img;
     }
     return null;
   },
@@ -1286,25 +1274,13 @@ const App = {
 
   setImgAsset(img, cat, name, onFail) {
     if (!name) { img.src = ''; return; }
-    const exts = this.assetExts;
-    let i = 0;
-    const resolve = () => {
-      /* Check in-memory store first */
-      for (const ext of exts) {
-        const path = `${cat}/${name}.${ext}`;
-        if (this.assets[path]) { img.src = this.assets[path]; return true; }
-      }
-      const direct = `${cat}/${name}`;
-      if (this.assets[direct]) { img.src = this.assets[direct]; return true; }
-      return false;
-    };
-    if (resolve()) return;
-    const tryNext = () => {
-      if (i < exts.length) { img.src = this.assetBaseURL(cat, name) + '.' + exts[i++]; }
-      else if (onFail) onFail();
-    };
-    img.onerror = tryNext;
-    tryNext();
+    for (const ext of this.assetExts) {
+      const path = `${cat}/${name}.${ext}`;
+      if (this.assets[path]) { img.src = this.assets[path]; return; }
+    }
+    const direct = `${cat}/${name}`;
+    if (this.assets[direct]) { img.src = this.assets[direct]; return; }
+    if (onFail) onFail();
   },
 
   preloadCardAssets(card) {
