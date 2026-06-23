@@ -648,6 +648,7 @@ const App = {
   diceFontScale() { return parseFloat(this.cssVar('--dice-font-scale')) || 0.75; },
 
   isDiceValue(val) { return typeof val === 'string' && /^d\d+$/.test(val); },
+  diceDisplay(val) { return this.isDiceValue(val) ? val.slice(1) : String(val ?? ''); },
 
   readDiceField(id) {
     const cb = document.querySelector(`.ce-dice-cb[data-target="${id}"]`);
@@ -1071,7 +1072,7 @@ const App = {
     }
     el.querySelector('.card-name').innerHTML = this.inlineIconsHtml(card.card_name || '');
     const costEl = el.querySelector('.card-cost'); costEl.innerHTML = '';
-    if (card.mana) { const m = document.createElement('span'); m.className = this.isDiceValue(card.mana) ? 'mana-square' : 'mana-circle'; m.textContent = card.mana; costEl.appendChild(m); }
+    if (card.mana) { const m = document.createElement('span'); m.className = this.isDiceValue(card.mana) ? 'mana-square' : 'mana-circle'; m.textContent = this.diceDisplay(card.mana); costEl.appendChild(m); }
     for (const [resName, resCount] of Object.entries(card.resources || {})) {
       for (let i = 0; i < resCount; i++) {
         const img = document.createElement('img'); img.className = 'resource-icon';
@@ -1090,8 +1091,8 @@ const App = {
     const atkDefEl = el.querySelector('.card-atk-def'); atkDefEl.innerHTML = '';
     if (card.attack || card.defence) {
       atkDefEl.style.display = '';
-      const atkEl = document.createElement('span'); atkEl.className = this.isDiceValue(card.attack) ? 'atk atk-square' : 'atk'; atkEl.textContent = card.attack ?? '0'; atkDefEl.appendChild(atkEl);
-      const defEl = document.createElement('span'); defEl.className = this.isDiceValue(card.defence) ? 'def def-square' : 'def'; defEl.textContent = card.defence ?? '0'; atkDefEl.appendChild(defEl);
+      const atkEl = document.createElement('span'); atkEl.className = this.isDiceValue(card.attack) ? 'atk atk-square' : 'atk'; atkEl.textContent = this.diceDisplay(card.attack); atkDefEl.appendChild(atkEl);
+      const defEl = document.createElement('span'); defEl.className = this.isDiceValue(card.defence) ? 'def def-square' : 'def'; defEl.textContent = this.diceDisplay(card.defence); atkDefEl.appendChild(defEl);
     } else {
       atkDefEl.style.display = 'none';
     }
@@ -1605,7 +1606,7 @@ const App = {
       const manaFs = this.cssPx('--mana-size') * (this.isDiceValue(card.mana) ? this.diceFontScale() : 1);
       ctx.font = `700 ${manaFs}px 'Cinzel', serif`;
       ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 2; ctx.shadowOffsetY = 1;
-      ctx.fillText(String(card.mana), cx, cy+1);
+      ctx.fillText(this.diceDisplay(card.mana), cx, cy+1);
       ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
       ctx.textAlign = 'start';
     }
@@ -1758,10 +1759,10 @@ const App = {
       ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2;
       const atkFs = atkSize * (this.isDiceValue(card.attack) ? this.diceFontScale() : 1);
       ctx.font = `700 ${atkFs}px 'Cinzel', serif`;
-      ctx.fillText(String(card.attack ?? '0'), atkX, atkY+1);
+      ctx.fillText(this.diceDisplay(card.attack ?? '0'), atkX, atkY+1);
       const defFs = atkSize * (this.isDiceValue(card.defence) ? this.diceFontScale() : 1);
       ctx.font = `700 ${defFs}px 'Cinzel', serif`;
-      ctx.fillText(String(card.defence ?? '0'), defX, atkY+1);
+      ctx.fillText(this.diceDisplay(card.defence ?? '0'), defX, atkY+1);
       ctx.textAlign = 'start';
       ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
     }
