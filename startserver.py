@@ -4,6 +4,8 @@ import sys
 
 
 class InternetFacingHandler(http.server.SimpleHTTPRequestHandler):
+    directory = "web"
+
     def handle(self):
         try:
             super().handle()
@@ -40,8 +42,8 @@ if __name__ == "__main__":
 
     try:
         with socketserver.TCPServer((HOST, PORT), InternetFacingHandler) as httpd:
-            print(f"Server actively listening on all interfaces (Port: {PORT})")
-            print(f"Accessible via your No-IP domain: http://ddns.net:{PORT}")
+            print(f"Serving web/ on all interfaces (Port: {PORT})")
+            print(f"Open: http://localhost:{PORT}")
             httpd.serve_forever()
     except PermissionError:
         print(
