@@ -1,4 +1,4 @@
-# Sihirizasyon: Toplantı Var
+# STV Editor
 
 A custom card game for up to 8 players, similar to Magic: The Gathering with many rule changes. Cards have abilities, attack/defence, creature pictures, resources, passives, and independently styled description sections.
 
