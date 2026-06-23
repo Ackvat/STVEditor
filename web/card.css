@@ -1,0 +1,328 @@
+/* =========================================
+   Card Template Styles
+   Edit this file to change the card layout.
+   Card size: 600 x 900 px
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap');
+
+:root {
+  --card-width: 600px;
+  --card-height: 900px;
+  --card-radius: 0px;
+  --card-bg: #f0e8d8;
+  --section-pad: 12px;
+
+  --top-bar-top: 10px;
+  --top-bar-h: 72px;
+
+  --picture-h: 369px;
+
+  --type-bar-h: 72px;
+
+  --text-bottom: 60px;
+
+  --name-family: 'Cinzel', serif;
+  --name-size: 48px;
+  --name-color: #ffffff;
+  --name-weight: 700;
+  --top-bar-bg-color: #000000;
+  --top-bar-opacity: 30%;
+  --top-bar-bg: rgba(0,0,0,0.3);
+
+  --type-bar-bg-color: #000000;
+  --type-bar-opacity: 40%;
+  --type-bar-bg: rgba(0,0,0,0.4);
+
+  --type-family: 'Times New Roman', serif;
+  --type-size: 48px;
+  --type-color: #ffffff;
+  --type-weight: 400;
+
+  --mana-size: 54px;
+  --mana-bg-top: #6ab0f7;
+  --mana-bg-bottom: #1a4a8a;
+  --mana-border: #c8a85e;
+
+  --section-header-family: 'Cinzel', serif;
+  --section-header-size: 22px;
+  --section-header-color: #ffffff;
+  --section-header-weight: 700;
+
+  --section-body-family: Georgia, serif;
+  --section-body-size: 16px;
+  --section-body-color: #ffffff;
+  --section-body-weight: 400;
+
+  --mana-circle-size: 48px;
+  --resource-icon-size: 32px;
+  --type-icon-size: 32px;
+
+  --atkdef-size: 54px;
+  --atkdef-circle-size: 48px;
+  --atkdef-color: #ffffff;
+  --atkdef-bg-top: #e8c878;
+  --atkdef-bg-bottom: #8a6a2a;
+  --atkdef-border: #c8a85e;
+
+  --dice-font-scale: 0.75;
+}
+
+/* ---- Card Container ---- */
+.card {
+  width: var(--card-width);
+  height: var(--card-height);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Open Sans', sans-serif;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--card-radius);
+}
+
+/* ---- Top Bar ---- */
+.card-top-bar {
+  position: absolute;
+  top: var(--top-bar-top);
+  left: var(--section-pad);
+  right: var(--section-pad);
+  height: var(--top-bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--top-bar-bg);
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.card-name {
+  font-family: var(--name-family);
+  font-weight: var(--name-weight);
+  font-size: var(--name-size);
+  color: var(--name-color);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.5);
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-cost {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mana-circle,
+.mana-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mana-circle-size);
+  height: var(--mana-circle-size);
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: var(--mana-size);
+  border: 2px solid var(--mana-border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+.mana-circle {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--mana-bg-top), var(--mana-bg-bottom));
+}
+.mana-square {
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--mana-bg-top), var(--mana-bg-bottom));
+  overflow: hidden;
+  font-size: calc(var(--mana-size) * var(--dice-font-scale, 0.75));
+}
+
+.resource-icon {
+  width: var(--resource-icon-size);
+  height: var(--resource-icon-size);
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+/* ---- Picture ---- */
+.card-picture {
+  position: absolute;
+  top: calc(var(--top-bar-top) + var(--top-bar-h) + 6px);
+  left: var(--section-pad);
+  right: var(--section-pad);
+  height: var(--picture-h);
+  overflow: hidden;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-picture img {
+  height: 100%;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* ---- Type Bar ---- */
+.card-type-bar {
+  position: absolute;
+  top: calc(var(--top-bar-top) + var(--top-bar-h) + 6px + var(--picture-h) + 8px);
+  left: var(--section-pad);
+  right: var(--section-pad);
+  height: var(--type-bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--type-bar-bg);
+  border-radius: 4px;
+  padding: 0 10px;
+  backdrop-filter: blur(2px);
+}
+
+.card-type-text {
+  font-family: var(--type-family);
+  font-weight: var(--type-weight);
+  font-size: var(--type-size);
+  color: var(--type-color);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-type-icon {
+  width: var(--type-icon-size);
+  height: var(--type-icon-size);
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  flex-shrink: 0;
+}
+
+/* ---- Text Section ---- */
+.card-text-section {
+  position: absolute;
+  top: calc(var(--top-bar-top) + var(--top-bar-h) + 6px + var(--picture-h) + 8px + var(--type-bar-h) + 8px);
+  left: var(--section-pad);
+  right: var(--section-pad);
+  bottom: var(--text-bottom);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.card-section-block {
+  padding: 4px 6px;
+  background: rgba(255,255,240,0.7);
+  border-radius: 3px;
+}
+
+.card-section-header {
+  font-family: var(--section-header-family);
+  font-weight: var(--section-header-weight);
+  font-size: var(--section-header-size);
+  color: var(--section-header-color);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: 2px;
+}
+
+.card-section-body {
+  font-family: var(--section-body-family);
+  font-weight: var(--section-body-weight);
+  font-size: var(--section-body-size);
+  color: var(--section-body-color);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ---- Attack / Defence ---- */
+.card-atk-def {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: var(--atkdef-size);
+  color: var(--atkdef-color);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.atk,
+.atk-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--atkdef-circle-size);
+  height: var(--atkdef-circle-size);
+  border: 2px solid #c8a85e;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.atk {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e74c3c, #922b21);
+}
+.atk-square {
+  border-radius: 4px;
+  background: linear-gradient(180deg, #e74c3c, #922b21);
+  overflow: hidden;
+  font-size: calc(var(--atkdef-size) * var(--dice-font-scale, 0.75));
+}
+
+.def,
+.def-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--atkdef-circle-size);
+  height: var(--atkdef-circle-size);
+  border: 2px solid #c8a85e;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.def {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #3498db, #1a5276);
+}
+.def-square {
+  border-radius: 4px;
+  background: linear-gradient(180deg, #3498db, #1a5276);
+  overflow: hidden;
+  font-size: calc(var(--atkdef-size) * var(--dice-font-scale, 0.75));
+}
+
+/* ---- Level ---- */
+.card-level {
+  position: absolute;
+  bottom: 10px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.level-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--atkdef-circle-size);
+  height: var(--atkdef-circle-size);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #9b59b6, #6c3483);
+  border: 2px solid #a569bd;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: var(--atkdef-size);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+

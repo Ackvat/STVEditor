@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sihirizasyon: Toplantı Var — Card Generator</title>
+  <link rel="stylesheet" href="tool.css">
+  <link rel="stylesheet" href="card.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div id="main-tabs-bar">
+      <button class="main-tab-btn active" data-maintab="project">Project</button>
+      <button class="main-tab-btn" data-maintab="statistics">Statistics</button>
+    </div>
+
+    <div id="main-project" class="main-view active">
+    <aside id="tool-panel">
+      <header>
+        <h1>Sihirizasyon</h1>
+        <h2>Toplantı Var</h2>
+      </header>
+
+      <section id="project-section">
+        <h3>Project</h3>
+        <div class="btn-row">
+          <button id="upload-btn">Upload Project</button>
+          <input type="file" id="project-input" accept=".zip" hidden>
+          <button id="save-btn" disabled>Save Project</button>
+        </div>
+        <div id="data-info" class="info-text">No project loaded</div>
+      </section>
+
+      <section id="nav-section">
+        <h3>Card Select</h3>
+        <div class="btn-row">
+          <button id="prev-btn">◀</button>
+          <select id="card-select" class="card-select"></select>
+          <button id="next-btn">▶</button>
+          <button id="refresh-assets-btn">⟳</button>
+        </div>
+        <div class="btn-row">
+          <span id="card-counter"></span>
+        </div>
+        <div class="btn-row" style="margin-top:6px">
+          <button id="add-card-btn">+ Add Card</button>
+          <button id="duplicate-card-btn">⧉ Duplicate</button>
+          <button id="remove-card-btn">− Remove</button>
+        </div>
+      </section>
+
+      <div id="editor-tabs" class="tabs-bar">
+        <button class="tab-btn active" data-tab="card">Card</button>
+        <button class="tab-btn" data-tab="assets">Assets</button>
+        <button class="tab-btn" data-tab="layout">Layout</button>
+        <button class="tab-btn" data-tab="style">Style</button>
+        <button class="tab-btn" data-tab="css">CSS</button>
+        <button class="tab-btn" data-tab="print">Print</button>
+      </div>
+
+      <div id="tab-contents" class="tabs-content">
+        <!-- Card Tab -->
+        <div class="tab-pane active" id="tab-card">
+          <div class="editor-scroll">
+            <div class="editor-group">
+              <h4>Basic Info</h4>
+              <label>Name <input type="text" id="ce-name" class="ce-field"></label>
+              <div class="half-row">
+                <label>Mana
+                  <span class="ce-dice-wrap">
+                    <input type="number" id="ce-mana" class="ce-field ce-num-field" min="0" max="99">
+                    <select class="ce-field ce-dice-select" id="ce-mana-dice" hidden>
+                      <option value="d6" selected>d6</option>
+                      <option value="d1">d1</option><option value="d2">d2</option><option value="d3">d3</option><option value="d4">d4</option><option value="d5">d5</option><option value="d6">d6</option><option value="d7">d7</option><option value="d8">d8</option><option value="d9">d9</option><option value="d10">d10</option><option value="d11">d11</option><option value="d12">d12</option><option value="d13">d13</option><option value="d14">d14</option><option value="d15">d15</option><option value="d16">d16</option><option value="d17">d17</option><option value="d18">d18</option><option value="d19">d19</option><option value="d20">d20</option>
+                    </select>
+                    <label class="ce-dice-label"><input type="checkbox" class="ce-dice-cb" data-target="ce-mana"> Dice</label>
+                  </span></label>
+                <label>Attack
+                  <span class="ce-dice-wrap">
+                    <input type="number" id="ce-attack" class="ce-field ce-num-field" min="0">
+                    <select class="ce-field ce-dice-select" id="ce-attack-dice" hidden>
+                      <option value="d6" selected>d6</option>
+                      <option value="d1">d1</option><option value="d2">d2</option><option value="d3">d3</option><option value="d4">d4</option><option value="d5">d5</option><option value="d6">d6</option><option value="d7">d7</option><option value="d8">d8</option><option value="d9">d9</option><option value="d10">d10</option><option value="d11">d11</option><option value="d12">d12</option><option value="d13">d13</option><option value="d14">d14</option><option value="d15">d15</option><option value="d16">d16</option><option value="d17">d17</option><option value="d18">d18</option><option value="d19">d19</option><option value="d20">d20</option>
+                    </select>
+                    <label class="ce-dice-label"><input type="checkbox" class="ce-dice-cb" data-target="ce-attack"> Dice</label>
+                  </span></label>
+                <label>Defence
+                  <span class="ce-dice-wrap">
+                    <input type="number" id="ce-defence" class="ce-field ce-num-field" min="0">
+                    <select class="ce-field ce-dice-select" id="ce-defence-dice" hidden>
+                      <option value="d6" selected>d6</option>
+                      <option value="d1">d1</option><option value="d2">d2</option><option value="d3">d3</option><option value="d4">d4</option><option value="d5">d5</option><option value="d6">d6</option><option value="d7">d7</option><option value="d8">d8</option><option value="d9">d9</option><option value="d10">d10</option><option value="d11">d11</option><option value="d12">d12</option><option value="d13">d13</option><option value="d14">d14</option><option value="d15">d15</option><option value="d16">d16</option><option value="d17">d17</option><option value="d18">d18</option><option value="d19">d19</option><option value="d20">d20</option>
+                    </select>
+                    <label class="ce-dice-label"><input type="checkbox" class="ce-dice-cb" data-target="ce-defence"> Dice</label>
+                  </span></label>
+              </div>
+              <label>Resources <span class="ce-hint">format: leaf:1, wood:2</span>
+                <input type="text" id="ce-resources" class="ce-field" placeholder="leaf:1, wood:2"></label>
+              <label>Level
+                <span class="ce-dice-wrap">
+                  <input type="number" id="ce-level" class="ce-field ce-num-field" min="0" max="999" value="1">
+                  <label class="ce-dice-label"><input type="checkbox" id="ce-show-level" checked> Show</label>
+                </span></label>
+              <div class="half-row">
+                <label>Printed
+                  <select id="ce-printed" class="ce-field">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select></label>
+                <label>Amount <input type="number" id="ce-amount" class="ce-field" min="1" value="1"></label>
+              </div>
+            </div>
+            <div class="editor-group">
+              <h4>Type</h4>
+              <label>Type <input type="text" id="ce-type" class="ce-field"></label>
+              <label>Form <input type="text" id="ce-form" class="ce-field"></label>
+              <label>Type Icon
+                <select id="ce-type-icon" class="ce-field">
+                  <option value="">(none)</option>
+                </select></label>
+            </div>
+            <div class="editor-group">
+              <h4>Images</h4>
+              <label>Picture
+                <div class="ce-file-row">
+                  <input type="file" id="ce-picture-input" accept="image/*" multiple hidden>
+                  <button class="ce-upload-btn" data-target="ce-picture-input">Browse…</button>
+                  <span class="ce-file-name" id="ce-picture-name">(none)</span>
+                  <button class="ce-clear-btn" data-field="ce-picture">✕</button>
+                </div></label>
+              <label>Background
+                <select id="ce-background" class="ce-field">
+                  <option value="">(none)</option>
+                </select></label>
+              <label>Card Back
+                <select id="ce-card-back" class="ce-field">
+                  <option value="">(default)</option>
+                </select></label>
+            </div>
+            <div class="editor-group" id="ce-sections-group">
+              <h4>Description Sections <span class="ce-hint">(bottom text blocks)</span></h4>
+              <div id="ce-sections-list"></div>
+              <button id="ce-add-section" class="ce-add-btn">+ Add Section</button>
+            </div>
+            <button id="ce-apply-btn" class="ce-apply-btn">Apply to Card</button>
+          </div>
+        </div>
+
+        <!-- Assets Tab -->
+        <div class="tab-pane" id="tab-assets">
+          <div class="sub-tabs-bar">
+            <button class="sub-tab-btn active" data-subtab="level">Level Colors</button>
+            <button class="sub-tab-btn" data-subtab="icons">Icons</button>
+            <button class="sub-tab-btn" data-subtab="backgrounds">Backgrounds</button>
+            <button class="sub-tab-btn" data-subtab="back">Card Back</button>
+          </div>
+          <div class="sub-tab-content">
+            <div class="sub-tab-pane active" id="subtab-level">
+              <div id="level-grid"></div>
+            </div>
+            <div class="sub-tab-pane" id="subtab-icons">
+              <div class="sub2-tabs-bar">
+                <button class="sub2-tab-btn active" data-sub2tab="resource">Resource</button>
+                <button class="sub2-tab-btn" data-sub2tab="type">Type</button>
+                <button class="sub2-tab-btn" data-sub2tab="action">Action</button>
+              </div>
+              <div class="sub2-tab-pane active" id="sub2tab-resource">
+                <div class="editor-group">
+                  <h4>Resource Icons</h4>
+                  <p class="info-text" style="margin-bottom:4px">Names here match <code>name:count</code> in Card tab's Resources field.</p>
+                  <div id="resource-icons-grid" class="asset-grid"></div>
+                  <div class="btn-row" style="margin-top:4px">
+                    <button id="resource-icon-asset-upload-btn" class="ce-upload-btn">Upload Resource Icon</button>
+                    <input type="file" id="resource-icon-asset-input" accept="image/*" multiple hidden>
+                  </div>
+                </div>
+              </div>
+              <div class="sub2-tab-pane" id="sub2tab-type">
+                <div class="editor-group">
+                  <h4>Type Icons</h4>
+                  <p class="info-text" style="margin-bottom:4px">These appear in the Type Icon dropdown on the Card tab.</p>
+                  <div id="type-icons-grid" class="asset-grid"></div>
+                  <div class="btn-row" style="margin-top:4px">
+                    <button id="type-icon-asset-upload-btn" class="ce-upload-btn">Upload Type Icon</button>
+                    <input type="file" id="type-icon-asset-input" accept="image/*" multiple hidden>
+                  </div>
+                </div>
+              </div>
+              <div class="sub2-tab-pane" id="sub2tab-action">
+                <div class="editor-group">
+                  <h4>Action Icons</h4>
+                  <p class="info-text" style="margin-bottom:4px">Use <code>&lt;name&gt;</code> in card text to embed icons inline.</p>
+                  <div id="action-icons-grid" class="asset-grid"></div>
+                  <div class="btn-row" style="margin-top:4px">
+                    <button id="action-icon-asset-upload-btn" class="ce-upload-btn">Upload Action Icon</button>
+                    <input type="file" id="action-icon-asset-input" accept="image/*" multiple hidden>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sub-tab-pane" id="subtab-backgrounds">
+              <div class="editor-group">
+                <h4>Backgrounds</h4>
+                <p class="info-text" style="margin-bottom:4px">These appear in the Background dropdown on the Card tab.</p>
+                <div id="backgrounds-grid" class="asset-grid"></div>
+                <div class="btn-row" style="margin-top:4px">
+                  <button id="backgrounds-asset-upload-btn" class="ce-upload-btn">Upload Background</button>
+                  <input type="file" id="backgrounds-asset-input" accept="image/*" multiple hidden>
+                </div>
+              </div>
+            </div>
+            <div class="sub-tab-pane" id="subtab-back">
+              <div class="editor-group">
+                <h4>Card Backs</h4>
+                <p class="info-text" style="margin-bottom:4px">These appear in the Card Back dropdown on the Card tab.</p>
+                <div id="backs-grid" class="asset-grid"></div>
+                <div class="btn-row" style="margin-top:4px">
+                  <button id="backs-asset-upload-btn" class="ce-upload-btn">Upload Card Back</button>
+                  <button id="backs-global-clear-btn" class="ce-clear-btn">✕ Clear Global</button>
+                </div>
+                <input type="file" id="backs-asset-input" accept="image/*" multiple hidden>
+                <div class="info-text" style="margin-top:4px">The global fallback <code>assets/back.*</code> is used when a card has no per-card back set.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layout Tab -->
+        <div class="tab-pane" id="tab-layout">
+          <div class="editor-group">
+            <h4>Card Dimensions</h4>
+            <label>Border Radius <span class="val" data-var="--card-radius">12</span>px
+              <input type="range" min="0" max="60" value="12" data-var="--card-radius" data-suffix="px"></label>
+            <label>Padding <span class="val" data-var="--section-pad">10</span>px
+              <input type="range" min="4" max="48" value="10" data-var="--section-pad" data-suffix="px"></label>
+          </div>
+          <div class="editor-group">
+            <h4>Section Heights</h4>
+            <label>Top Bar Height <span class="val" data-var="--top-bar-h">46</span>px
+              <input type="range" min="30" max="160" value="46" data-var="--top-bar-h" data-suffix="px"></label>
+            <label>Picture Height <span class="val" data-var="--picture-h">400</span>px
+              <input type="range" min="180" max="1040" value="400" data-var="--picture-h" data-suffix="px"></label>
+            <label>Type Bar Height <span class="val" data-var="--type-bar-h">36</span>px
+              <input type="range" min="20" max="120" value="36" data-var="--type-bar-h" data-suffix="px"></label>
+            <label>Text Bottom Gap <span class="val" data-var="--text-bottom">56</span>px
+              <input type="range" min="30" max="200" value="56" data-var="--text-bottom" data-suffix="px"></label>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-style">
+          <div class="editor-group">
+            <h4>Name</h4>
+            <label>Font
+              <select data-var="--name-family">
+                <option value="'Cinzel', serif">Cinzel</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="Arial, sans-serif">Arial</option>
+              </select></label>
+            <label>Size <span class="val" data-var="--name-size">22</span>px
+              <input type="range" min="12" max="80" value="22" data-var="--name-size" data-suffix="px"></label>
+            <label>Color
+              <input type="color" value="#ffffff" data-var="--name-color"></label>
+            <label>Top Bar BG Color
+              <input type="color" value="#000000" data-var="--top-bar-bg-color"></label>
+            <label>Top Bar Opacity <span class="val" data-var="--top-bar-opacity">30</span>%
+              <input type="range" min="0" max="100" value="30" data-var="--top-bar-opacity" data-suffix="%"></label>
+          </div>
+          <div class="editor-group">
+            <h4>Type Bar</h4>
+            <label>Font
+              <select data-var="--type-family">
+                <option value="'Cinzel', serif">Cinzel</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+              </select></label>
+            <label>Size <span class="val" data-var="--type-size">16</span>px
+              <input type="range" min="12" max="56" value="16" data-var="--type-size" data-suffix="px"></label>
+            <label>Color
+              <input type="color" value="#ffffff" data-var="--type-color"></label>
+            <label>Icon Size <span class="val" data-var="--type-icon-size">26</span>px
+              <input type="range" min="12" max="104" value="26" data-var="--type-icon-size" data-suffix="px"></label>
+            <label>Type Bar BG Color
+              <input type="color" value="#000000" data-var="--type-bar-bg-color"></label>
+            <label>Type Bar Opacity <span class="val" data-var="--type-bar-opacity">40</span>%
+              <input type="range" min="0" max="100" value="40" data-var="--type-bar-opacity" data-suffix="%"></label>
+          </div>
+          <div class="editor-group">
+            <h4>Description Section Defaults</h4>
+            <p class="info-text" style="margin-bottom:6px">These apply to sections without per-section overrides.</p>
+            <label>Section Header Font
+              <select data-var="--section-header-family">
+                <option value="'Cinzel', serif">Cinzel</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+              </select></label>
+            <label>Section Header Size <span class="val" data-var="--section-header-size">15</span>px
+              <input type="range" min="10" max="52" value="15" data-var="--section-header-size" data-suffix="px"></label>
+            <label>Section Header Color
+              <input type="color" value="#ffffff" data-var="--section-header-color"></label>
+            <label>Section Header Weight
+              <select data-var="--section-header-weight">
+                <option value="700">Bold (700)</option>
+                <option value="600">Semi Bold (600)</option>
+                <option value="400">Normal (400)</option>
+              </select></label>
+            <label>Section Body Font
+              <select data-var="--section-body-family">
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Cinzel', serif">Cinzel</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+              </select></label>
+            <label>Section Body Size <span class="val" data-var="--section-body-size">13</span>px
+              <input type="range" min="9" max="44" value="13" data-var="--section-body-size" data-suffix="px"></label>
+            <label>Section Body Color
+              <input type="color" value="#ffffff" data-var="--section-body-color"></label>
+            <label>Section Body Weight
+              <select data-var="--section-body-weight">
+                <option value="400">Normal (400)</option>
+                <option value="600">Semi Bold (600)</option>
+                <option value="700">Bold (700)</option>
+              </select></label>
+          </div>
+          <div class="editor-group">
+            <h4>Mana &amp; Atk/Def</h4>
+            <label>Mana Size <span class="val" data-var="--mana-size">18</span>px
+              <input type="range" min="10" max="72" value="18" data-var="--mana-size" data-suffix="px"></label>
+            <label>Mana Circle Size <span class="val" data-var="--mana-circle-size">34</span>px
+              <input type="range" min="20" max="120" value="34" data-var="--mana-circle-size" data-suffix="px"></label>
+            <label>Mana Circle Top Color
+              <input type="color" value="#6ab0f7" data-var="--mana-bg-top"></label>
+            <label>Mana Circle Bottom Color
+              <input type="color" value="#1a4a8a" data-var="--mana-bg-bottom"></label>
+            <label>Resource Icon Size <span class="val" data-var="--resource-icon-size">28</span>px
+              <input type="range" min="12" max="104" value="28" data-var="--resource-icon-size" data-suffix="px"></label>
+            <label>Atk/Def Font Size <span class="val" data-var="--atkdef-size">26</span>px
+              <input type="range" min="12" max="88" value="26" data-var="--atkdef-size" data-suffix="px"></label>
+            <label>Atk/Def Circle Size <span class="val" data-var="--atkdef-circle-size">44</span>px
+              <input type="range" min="24" max="144" value="44" data-var="--atkdef-circle-size" data-suffix="px"></label>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-css">
+          <div class="editor-group">
+            <h4>Raw CSS Editor</h4>
+            <p class="info-text">Edit the card template CSS directly. Changes apply immediately.</p>
+            <textarea id="css-editor" spellcheck="false"></textarea>
+            <div class="btn-row" style="margin-top:8px">
+              <button id="css-apply-btn">Apply</button>
+              <button id="css-save-btn">Save to File</button>
+              <button id="css-load-btn">Load from File</button>
+              <input type="file" id="css-file-input" accept=".css" hidden>
+              <button id="css-reset-btn">Reset to Default</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-print">
+          <div class="editor-group">
+            <h4>Sheet Layout</h4>
+            <label>Columns <span class="val" id="print-cols-val">3</span>
+              <input type="range" id="print-cols" min="1" max="6" value="3"></label>
+            <label>Rows <span class="val" id="print-rows-val">3</span>
+              <input type="range" id="print-rows" min="1" max="6" value="3"></label>
+          </div>
+          <div class="editor-group">
+            <h4>Margins &amp; Gaps (px at 1×)</h4>
+            <label>Horizontal Margin <span class="val" id="print-mx-val">75</span>
+              <input type="range" id="print-mx" min="0" max="200" value="75" step="5"></label>
+            <label>Vertical Margin <span class="val" id="print-my-val">60</span>
+              <input type="range" id="print-my" min="0" max="200" value="60" step="5"></label>
+            <label>Horizontal Gap <span class="val" id="print-gx-val">75</span>
+              <input type="range" id="print-gx" min="0" max="200" value="75" step="5"></label>
+            <label>Vertical Gap <span class="val" id="print-gy-val">75</span>
+              <input type="range" id="print-gy" min="0" max="200" value="75" step="5"></label>
+          </div>
+          <div class="editor-group">
+            <h4>Card Back</h4>
+            <label><input type="checkbox" id="print-back-flip-h"> Flip Back Horizontally</label>
+            <label><input type="checkbox" id="print-back-flip-v"> Flip Back Vertically</label>
+          </div>
+          <div class="editor-group">
+            <h4>Preview</h4>
+            <div class="btn-row">
+              <button id="print-side-front" class="print-side-btn active">Front</button>
+              <button id="print-side-back" class="print-side-btn">Back</button>
+            </div>
+          </div>
+          <div class="editor-group">
+            <h4>Settings</h4>
+            <div class="btn-row">
+              <button id="print-save-btn">Save to File</button>
+              <button id="print-load-btn">Load from File</button>
+              <input type="file" id="print-file-input" accept=".json" hidden>
+              <button id="print-reset-btn">Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="gen-section">
+        <h3>Generate</h3>
+        <button id="gen-all-btn" disabled>Generate All (Individual + A4 Print)</button>
+        <div class="btn-row" style="margin-top:8px">
+          <button id="gen-fronts-pdf-btn" disabled>Generate Fronts PDF</button>
+          <button id="gen-backs-pdf-btn" disabled>Generate Backs PDF</button>
+        </div>
+        <div id="gen-status" class="info-text"></div>
+        <div id="progress-wrap" hidden>
+          <div id="progress-fill"></div>
+        </div>
+      </section>
+    </aside>
+
+    <main id="preview-panel">
+      <div id="card" class="card">
+        <div class="card-top-bar">
+          <span class="card-name">Card Name</span>
+          <span class="card-cost"></span>
+        </div>
+        <div class="card-picture">
+          <img src="" alt="">
+        </div>
+        <div class="card-type-bar">
+          <span class="card-type-text">Type &ndash; Form</span>
+          <img class="card-type-icon" src="" alt="">
+        </div>
+        <div class="card-text-section">
+          <div class="card-section-block">
+            <div class="card-section-body">Card preview</div>
+          </div>
+        </div>
+        <div class="card-level">
+          <span class="level-circle">1</span>
+        </div>
+        <div class="card-atk-def">
+          <span class="atk">0</span><span class="def">0</span>
+        </div>
+      </div>
+      <div id="print-preview-wrap" style="display:none">
+        <canvas id="print-preview"></canvas>
+      </div>
+    </main>
+    </div>
+
+    <div id="main-statistics" class="main-view">
+      <aside id="stats-sidebar">
+        <section>
+          <h3>Filters</h3>
+          <div class="stats-filter-group">
+            <h4>Level</h4>
+            <label><input type="checkbox" class="stats-filter-level" value="all" checked> All</label>
+            <div id="stats-level-list"></div>
+          </div>
+          <div class="stats-filter-group">
+            <h4>Printed</h4>
+            <label><input type="radio" name="stats-printed" value="all" checked> All</label>
+            <label><input type="radio" name="stats-printed" value="printed"> Printed Only</label>
+            <label><input type="radio" name="stats-printed" value="unprinted"> Unprinted Only</label>
+          </div>
+          <div class="stats-filter-group">
+            <h4>Display</h4>
+            <label><input type="checkbox" class="stats-display" value="overview" checked> Overview</label>
+            <label><input type="checkbox" class="stats-display" value="level-dist" checked> Level Distribution</label>
+            <label><input type="checkbox" class="stats-display" value="stats" checked> Attack / Defence / Mana</label>
+            <label><input type="checkbox" class="stats-display" value="resources" checked> Resources</label>
+            <label><input type="checkbox" class="stats-display" value="type-dist" checked> Type / Form</label>
+          </div>
+        </section>
+        <section>
+          <button id="stats-refresh-btn" style="width:100%">⟳ Refresh</button>
+        </section>
+      </aside>
+      <main id="stats-content">
+        <div id="stats-no-data" class="stats-section" style="display:none">
+          <p class="stats-bar-empty">No cards loaded. Load a project or add cards to see statistics.</p>
+        </div>
+        <div id="stats-overview" class="stats-section">
+          <h3>Overview</h3>
+          <div class="stats-cards">
+            <div class="stat-card"><span class="stat-label">Total Cards</span><span class="stat-value" id="stat-total">0</span></div>
+            <div class="stat-card"><span class="stat-label">Printed</span><span class="stat-value" id="stat-printed">0</span></div>
+            <div class="stat-card"><span class="stat-label">Avg Attack</span><span class="stat-value" id="stat-avg-atk">0</span></div>
+            <div class="stat-card"><span class="stat-label">Avg Defence</span><span class="stat-value" id="stat-avg-def">0</span></div>
+            <div class="stat-card"><span class="stat-label">Avg Mana</span><span class="stat-value" id="stat-avg-mana">0</span></div>
+          </div>
+        </div>
+        <div id="stats-level-dist" class="stats-section">
+          <h3>Level Distribution</h3>
+          <div id="stats-level-chart" class="stats-bar-chart"></div>
+        </div>
+        <div id="stats-stats" class="stats-section">
+          <h3>Attack / Defence / Mana</h3>
+          <div id="stats-stats-table"></div>
+        </div>
+        <div id="stats-resources" class="stats-section">
+          <h3>Resource Requirements</h3>
+          <div id="stats-resources-table"></div>
+        </div>
+        <div id="stats-type-dist" class="stats-section">
+          <h3>Type / Form Distribution</h3>
+          <div id="stats-type-chart"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <style id="custom-css-block"></style>
+  <script src="script.js"></script>
+</body>
+</html>
